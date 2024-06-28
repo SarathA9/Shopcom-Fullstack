@@ -1,24 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import Navbar from "./Navbar";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import Home from "./components/Home";
+import Category from "./components/Category";
+import Products from "./components/Products";
+import AllProducts from "./components/AllProducts";
+import Footer from './components/Footer';
+import AuthPage from './components/AuthPage';
+import Buy from './components/VideoBackground';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
+  );
+}
+
+function AppContent() {
+  const location = useLocation();
+
+  // Check if the current route is /VideoBackground
+  const isVideoBackgroundRoute = location.pathname === "/buy";
+
+  return (
+    <>
+      {!isVideoBackgroundRoute && <Navbar />}
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<AuthPage />} />
+        <Route path="/buy" element={<Buy />} />
+        <Route path="/Category" element={<Category />} />
+        <Route path="/Products/:categoryName" element={<Products />} />
+        <Route path="/Products" element={<AllProducts />} />
+      </Routes>
+      {!isVideoBackgroundRoute && <Footer />}
+    </>
   );
 }
 

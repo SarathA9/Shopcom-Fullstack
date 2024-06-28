@@ -1,0 +1,289 @@
+.container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  min-height: max-content;
+}
+body{
+  animation: fadeIn 1.5s ease-in-out;
+
+}
+
+.sub-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+.sub-container img{
+  animation: bounce 2s infinite alternate;
+}
+
+.heading {
+  font-size: 3.5rem;
+  max-width: 550px;
+  margin-bottom: 20px;
+  opacity: .7;
+}
+.shopcom-text{
+  font-size: 5rem;
+  background: linear-gradient(to right , #036e84,rgb(37, 208, 86),rgb(37, 208, 86));
+  font-family: "Rajdhani", sans-serif;
+  background-clip: text;
+  color: transparent;
+  opacity: 1;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes bounce {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-30px);
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    min-height: 80vh;
+  }
+
+  .heading {
+    font-size: 2.5rem;
+    margin-bottom: 0px;
+  }
+  .shopcom-text{
+    font-size: 3rem;
+  }
+
+  img {
+    width: 100%;
+  }
+}
+/* Login */
+#login-image {
+  background-color: #f9f9f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+}
+
+#login-image img {
+  height: 250px;
+  padding-top: 50px;
+  animation: floatAnimation 2s infinite ease-in-out alternate;
+}
+
+@keyframes floatAnimation {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-40px);
+  }
+}
+
+#login-container {
+  display: flex;
+  justify-content: center;
+  height: fit-content;
+  margin-top: 30px;
+  padding: 40px;
+  border-radius: 5px;
+}
+
+#login-form {
+  width: 300px;
+  padding: 20px;
+  background-color: #f9f9f9;
+}
+#login-form h2{
+  font-size: 2.5rem;
+  color: #064f60;
+}
+@media (max-width: 768px) {
+  #login-container {
+    flex-direction: column;
+    transform: scale(0.8);
+    margin-top: 0;
+  }
+
+  #login-image img {
+    height: 150px;
+  }
+}
+#login-form input[type="text"], #login-form input[type="password"]{
+  background: rgb(231, 229, 229,.6);
+  font-family: "Rajdhani", sans-serif;
+  padding: 10px;
+  border: none;
+  margin-top: 10px;
+
+}
+.signin-btn{
+  font-family: "Rajdhani", sans-serif;
+  padding: 10px;
+  border: 1px solid #68e1fd;
+  background-color: #68e1fd;
+  color: #fff;
+}
+#showSignupButton{
+  border: none;
+  font-family: "Rajdhani", sans-serif;
+  background: transparent;
+  color: #034e9f;
+  font-weight: 500;
+  text-decoration: underline;
+}
+/* VideoBackground */
+.video-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#video-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  text-align: center;
+}
+
+.content h1 {
+  font-size: 3rem;
+}
+
+.content p {
+  font-size: 1.5rem;
+}
+
+/* Cart */
+
+.productContainer {
+  display: flex;
+  width: 78%;
+  padding: 20px;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.filters {
+  background-color: #343a40;
+  color: white;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  width: 20%;
+  margin: 10px;
+  height: 86vh;
+}
+
+.filters > span {
+  padding-bottom: 20px;
+}
+
+.title {
+  font-size: 30px;
+}
+
+span.createdBy {
+  margin-top: 30px;
+  font-size: small;
+  
+}
+
+.products {
+  width: 30%;
+  margin: 10px;
+}
+
+.cartItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 20px;
+  margin-bottom: 20px;
+}
+
+.cartItemImg {
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+}
+
+.cartItemDetail {
+  display: flex;
+  flex: 1;
+  padding: 0 20px;
+  flex-direction: column;
+}
+
+.summary {
+  width: 30%;
+}
+
+/* Media Queries */
+@media (max-width: 771px) {
+  .filters {
+    width: 40%;
+    padding: 10px;
+    margin: 5px;
+  }
+
+  .filters > span {
+    font-size: 10px;
+  }
+
+  .title {
+    font-size: 18px !important;
+  }
+
+  .productContainer {
+    width: 58%;
+    padding: 0;
+  }
+
+  .search {
+    display: none !important;
+  }
+
+  .products {
+    width: 100%;
+  }
+}
+.login-form{
+  font-family: "Rajdhani", sans-serif;
+
+}
