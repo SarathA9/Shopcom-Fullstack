@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useState, useEffect } from 'react';
+import { useMediaQuery } from '@mui/material';
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -23,16 +24,16 @@ import BeautyIcon from '@mui/icons-material/Face';
 import FurnitureIcon from '@mui/icons-material/Chair';
 import FashionIcon from '@mui/icons-material/Checkroom';
 import BooksIcon from '@mui/icons-material/MenuBook';
-import Logo from "./assets/logo.png";
+import Logo from "./assets/logo2.png";
 import BGVideo1 from './assets/BGVideo4.mp4';
 import BGVideo2 from './assets/shopping-girl.mp4';
-import BGVideo3 from './assets/card.mp4';
-import Products from './AllProducts'
+import BGVideo3 from './assets/girl2.mp4';
+import Products from './AllProducts';
 
 const pages = [
   { title: "Home", path: "/" },
-  { title: "login", path: "/login" },
-  { title: "seller", path: "/seller" },
+  { title: "Login", path: "/", onClick: () => window.location.reload() },
+  { title: "Seller", path: "/seller" },
   { title: "Category", path: "/Category" },
 ];
 
@@ -49,7 +50,8 @@ const categories = [
 const LandingPage = () => {
   const [currentVideo, setCurrentVideo] = useState(0);
   const [drawerOpen, setDrawerOpen] = useState(false);
-
+  const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
+  
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentVideo((prev) => (prev + 1) % videos.length);
@@ -90,33 +92,41 @@ const LandingPage = () => {
 
   return (
     <Box sx={{ flexGrow: 1, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <AppBar position="static" sx={{ bgcolor: 'rgba(255,255,255)', color:'black', boxShadow: 'none',display:'flex',justifyContent:'space-around' }}>
-        <Container maxWidth="xl">
+      <AppBar position="static" 
+      sx={{
+        bgcolor: 'rgba(255,255,255)',
+        color: 'black',
+        boxShadow: 'none',
+        display: 'flex',
+        marginLeft: '80px',
+      }}>
+        <Container maxWidth="xl">  
           <Toolbar disableGutters>
             <Box sx={{ display: "flex", alignItems: "center", mr: 2 }}>
-              <img src={Logo} alt="Logo" style={{ height: "80px", width: "auto" }} />
+              <img src={Logo} alt="Logo" style={{ height: isSmallScreen ? '60px' : '80px', width: 'auto' }} />
             </Box>
             
             <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', bgcolor: '#333', borderRadius: '4px 0 0 4px', p: 1 }}>
-                <SearchIcon sx={{ color: '#fff' }} />
-                <Typography sx={{ color: '#fff', ml: 1 }}>Search</Typography>
+                <SearchIcon sx={{ color: '#fff',fontSize: isSmallScreen ? '.5rem' : '.7rem' }} />
+                <Typography sx={{ color: '#fff', ml: 1, fontSize: isSmallScreen ? '.5rem' : '.7rem' }}>Search</Typography>
               </Box>
               <InputBase
                 placeholder="What are you looking for?"
                 sx={{
                   ml: 0,
+                  fontSize: isSmallScreen ? '.6rem' : '.72rem',
                   flex: 1,
                   bgcolor: '#fff',
                   color: 'black',
                   p: 1,
                   borderRadius: '0 4px 4px 0',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)', // Adding a shadow effect
-                  maxWidth: 300, // Limiting maximum width of the box
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                  maxWidth: isSmallScreen ? 150 : 220,
                   '& .MuiInputBase-input': {
-                    pl: 1, // Left padding for the input text
-                    width: '100%', // Ensures the input takes full width within the box
-                    boxSizing: 'border-box', // Ensures padding is included in the width
+                    pl: 1,
+                    width: '100%',
+                    boxSizing: 'border-box', 
                   },
                 }}
               />
@@ -124,19 +134,19 @@ const LandingPage = () => {
             
             <Box sx={{ display: { xs: "none", md: "flex" } }}>
               {pages.map((page) => (
-                <Link key={page?.title} to={page?.path} style={{ textDecoration: "none" }}>
+                <Link key={page.title} to={page.path} style={{ textDecoration: "none" }}>
                   <Button
-                    onClick={toggleDrawer(false)}
+                    onClick={page.onClick}
                     sx={{ 
                       my: 2, 
                       color: "black", 
                       display: "block",
-                      fontSize:'1rem', 
-                      fontWeight:"400",
+                      fontSize: '1rem', 
+                      fontWeight: "400",
                       fontFamily: "Rajdhani",
                     }}
                   >
-                    {page?.title}
+                    {page.title}
                   </Button>
                 </Link>
               ))}
@@ -166,7 +176,7 @@ const LandingPage = () => {
       </AppBar>
 
       <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2 }}>
-        <Box sx={{ position: 'relative', width: '90%', maxWidth: '1200px', height: '400px' }}>
+        <Box sx={{ position: 'relative', width: '90%', maxWidth: '1200px', height: isSmallScreen ? '200px' : '400px' }}>
           {videos.map((video, index) => (
             <Box
               key={index}
@@ -179,7 +189,8 @@ const LandingPage = () => {
                 opacity: index === currentVideo ? 1 : 0,
                 transition: 'opacity 1s ease-in-out',
                 overflow: 'hidden',
-                borderRadius:'5px'
+                borderRadius: '10px',
+                boxShadow: '2px 2px 4px rgba(0,0,0,0.1)',
               }}
             >
               <video

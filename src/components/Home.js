@@ -11,7 +11,7 @@ function Home() {
         <div>
         <h1 className='heading'>Welcome to <span className='shopcom-text'>ShopCom</span></h1>
         <p>Discover the best product at unbeatable price</p>
-        <a href='/category'>
+        <a href='/buy'>
           <Button variant="outlined" endIcon={<SendIcon />}>
             SHOP NOW
           </Button>

@@ -1,117 +1,68 @@
 import React, { useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import axios from 'axios';
+import CloseIcon from '@mui/icons-material/Close';
 import LogoImg from './assets/login-image.png';
-import BG from './assets/bg.png';
-import BGSmall from './assets/bg-small.png';
-import './style.css';
 
-const Background = styled.div`
+const Overlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background: url(${BG});
-  background-position: center;
-  background-size: cover;
-  overflow: hidden;
-  padding:15px;
-
-  @media (max-width: 768px) {
-    background: url(${BGSmall});
-    background-position: center;
-    background-size: cover;
-  }
+  z-index: 1000;
 `;
-const FormWrapper = styled.div`
-background: linear-gradient(
-  to right, 
-  rgba(255, 255, 255, 0.2),
-  rgba(255, 255, 255, 0.2)
 
-);  border-radius: 15px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  padding: 40px;
-  overflow: hidden;
+const PopupForm = styled.div`
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   max-width: 400px;
   width: 100%;
-  text-align: center;
-  animation: ${keyframes`
-    from {
-      opacity: 0;
-      transform: translateY(-20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  `} 0.5s ease-in-out;
-
-  @media (max-width: 768px) {
-    padding: 20px;
-    max-width: 250px;
-  }
+  position: relative;
+  background: linear-gradient(
+  to right, 
+  rgba(255, 255, 255, 0.8),
+  rgba(255, 255, 255, 0.8)
+);
 `;
 
-const Title = styled.h1`
+const CloseButton = styled(CloseIcon)`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  color: #333;
+`;
+
+const Title = styled.h2`
   color: #333;
   margin-bottom: 20px;
+  text-align: center;
+`;
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
 `;
 
 const Input = styled.input`
-  width: 100%;
   padding: 10px;
   margin-bottom: 10px;
   border: 1px solid #ddd;
   border-radius: 5px;
-  outline: none;
-  transition: border-color 0.3s ease;
-
-  &:focus {
-    border-color: #2575fc;
-  }
-
-  @media (max-width: 768px) {
-    padding: 10px;
-  }
 `;
 
-const Button = styled.button`
-  width: 100%;
-  padding: 15px;
-  background: #2575fc;
-  color: #fff;
-  border: none;
+const Select = styled.select`
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
   border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: background 0.3s ease;
-
-  &:hover {
-    background: #6a11cb;
-  }
-
-  @media (max-width: 768px) {
-    padding: 10px;
-    font-size: 14px;
-  }
-`;
-
-const StyledLink = styled.a`
-  display: block;
-  margin-top: 20px;
-  color: #2575fc;
-  text-decoration: none;
-  font-size: 14px;
-  cursor: pointer;
-
-  &:hover {
-    text-decoration: underline;
-  }
-
-  @media (max-width: 768px) {
-    font-size: 12px;
-  }
 `;
 
 const moveLeftRight = keyframes`
@@ -126,25 +77,35 @@ const moveLeftRight = keyframes`
   }
 `;
 
-const Image = styled.img`
-  max-width: 80px;
-  height: auto;
-  border-radius: 15px;
-  margin-bottom: 20px;
+const Button = styled.button`
+  padding: 10px;
+  background: #2575fc;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+
+  &:hover {
+    background: #1a5fc8;
+  }
+`;
+
+const ToggleText = styled.p`
+  text-align: center;
+  margin-top: 15px;
+  cursor: pointer;
+  color: #2575fc;
+`;
+
+const Logo = styled.img`
+  width: 80px;
+  margin: 0 auto 20px;
+  display: block;
   animation: ${moveLeftRight} 2s infinite;
 `;
 
-const Select = styled.select`
-  width: 100%;
-  padding: 15px;
-  margin: 10px 0;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  outline: none;
-  background-color: white;
-`;
-
-const AuthPage = () => {
+const AuthPopup = ({ onClose }) => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -172,13 +133,14 @@ const AuthPage = () => {
           email: formData.email,
           password: formData.password
         });
+        const { id, name, email, gender } = response.data; // Adjust based on your backend response
         console.log(response.data);
-  
-        // Save token or user data to localStorage on successful login
-        localStorage.setItem('userData', JSON.stringify(response.data));
         alert('Signed in successfully!');
+
+        // Store user info in local storage
+        localStorage.setItem('user', JSON.stringify({ id, name, email, gender }));
       }
-      // Here you might want to save the token, redirect the user, etc.
+      onClose();
     } catch (error) {
       console.error(error);
       alert(isSignUp ? 'Error creating user' : 'Error signing in');
@@ -198,14 +160,14 @@ const AuthPage = () => {
   };
 
   return (
-    <Background>
-      <FormWrapper className='login-form'>
-        <Image src={LogoImg} alt="Auth" />
+    <Overlay>
+      <PopupForm>
+        <CloseButton onClick={onClose} />
+        <Logo src={LogoImg} alt="Auth Logo" />
         <Title>{isSignUp ? 'Create Your Account' : 'Sign In'}</Title>
-        <form onSubmit={handleSubmit} className='login-form'>
+        <Form className="login-form" onSubmit={handleSubmit}>
           {isSignUp && (
             <Input
-              className='login-form'
               type="text"
               name="name"
               placeholder="Name"
@@ -215,7 +177,6 @@ const AuthPage = () => {
             />
           )}
           <Input
-            className='login-form'
             type="email"
             name="email"
             placeholder="Email"
@@ -224,7 +185,6 @@ const AuthPage = () => {
             required
           />
           <Input
-            className='login-form'
             type="password"
             name="password"
             placeholder="Password"
@@ -235,7 +195,6 @@ const AuthPage = () => {
           {isSignUp && (
             <>
               <Input
-                className='login-form'
                 type="tel"
                 name="phone_number"
                 placeholder="Phone Number"
@@ -243,14 +202,12 @@ const AuthPage = () => {
                 onChange={handleChange}
               />
               <Input
-                className='login-form'
                 type="date"
                 name="date_of_birth"
                 value={formData.date_of_birth}
                 onChange={handleChange}
               />
               <Select
-                className='login-form'
                 name="gender"
                 value={formData.gender}
                 onChange={handleChange}
@@ -263,13 +220,13 @@ const AuthPage = () => {
             </>
           )}
           <Button type="submit">{isSignUp ? 'Sign Up' : 'Sign In'}</Button>
-        </form>
-        <StyledLink onClick={toggleMode}>
+        </Form>
+        <ToggleText onClick={toggleMode}>
           {isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
-        </StyledLink>
-      </FormWrapper>
-    </Background>
+        </ToggleText>
+      </PopupForm>
+    </Overlay>
   );
 };
 
-export default AuthPage;
+export default AuthPopup;
