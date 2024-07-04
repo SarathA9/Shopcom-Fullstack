@@ -340,7 +340,7 @@ const handleUpdateProfile = async (formData) => {
 
       <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2 }}>
         <Box sx={{ position: 'relative', width: '90%', maxWidth: '1200px', height: {
-                  xs: '150px', 
+                  xs: '250px', 
                   sm: '300px', 
                   md: '400px', 
                 } }}>
@@ -353,7 +353,7 @@ const handleUpdateProfile = async (formData) => {
                 left: 0,
                 width: '100%',
                 height: {
-                  xs: '150px', 
+                  xs: '250px', 
                   sm: '300px', 
                   md: '400px', 
                 },
