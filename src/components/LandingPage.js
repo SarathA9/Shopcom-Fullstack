@@ -4,7 +4,6 @@ import LandingPage from './VideoBackground';
 
 const App = () => {
   const [showAuthPopup, setShowAuthPopup] = useState(true);
-
   const handleClosePopup = () => {
     setShowAuthPopup(false);
   };

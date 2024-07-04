@@ -8,9 +8,16 @@ import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
-import { Box, TextField } from "@mui/material";
+import IconButton from "@mui/material/IconButton";
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import { Box, TextField, Badge } from "@mui/material";
 import { styled, ThemeProvider, createTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import Cart from "./Cart";
+import Navbar from '../Navbar';
 
 const StyledCard = styled(Card)({
   maxWidth: 250,
@@ -60,28 +67,105 @@ const theme = createTheme({
 function Products() {
   const { categoryName } = useParams();
   const [products, setProducts] = useState([]);
-  const [expanded, setExpanded] = useState(null);  // State to track expanded card
+  const [expanded, setExpanded] = useState(null);
+  const [cart, setCart] = useState({});
+  const [cartOpen, setCartOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [user, setUser] = useState(null);
+  const [wishlist, setWishlist] = useState([]);
 
   useEffect(() => {
     axios
       .get(`https://dummyjson.com/products/category/${categoryName}`)
       .then((res) => {
         setProducts(res.data.products);
-        console.log(res, 111);
       })
       .catch((err) => {
-        console.log(err, 2222);
+        console.log(err);
       });
+
+    // Fetch user data
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+      fetchWishlist(JSON.parse(storedUser).id);
+    }
   }, [categoryName]);
 
-  const [search, setSearch] = useState("");
+  const fetchWishlist = (userId) => {
+    axios
+      .get(`http://localhost:5000/api/wishlist/${userId}`)
+      .then((res) => {
+        setWishlist(res.data.map(item => item.product_id));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   const handleChange = (e) => {
     setSearch(e.target.value.toLowerCase());
-    console.log(search);
   };
 
   const handleExpandClick = (id) => {
     setExpanded(expanded === id ? null : id);
+  };
+
+  const handleAddToCart = async (product) => {
+    if (!user) {
+      alert('Please log in to add items to your cart.');
+      return;
+    }
+
+    try {
+      setCart((prevCart) => {
+        const newCart = { ...prevCart };
+        if (newCart[product.id]) {
+          newCart[product.id].quantity += 1;
+        } else {
+          newCart[product.id] = { ...product, quantity: 1 };
+        }
+        return newCart;
+      });
+
+      const response = await axios.post('http://localhost:5000/api/cart/update', {
+        userId: user.id,
+        productId: product.id,
+        quantity: cart[product.id] ? cart[product.id].quantity + 1 : 1
+      });
+
+      console.log('Cart updated in database:', response.data);
+    } catch (error) {
+      console.error('Error updating cart in database:', error);
+    }
+  };
+
+  const handleToggleWishlist = async (product) => {
+    if (!user) {
+      alert('Please log in to add items to your wishlist.');
+      return;
+    }
+
+    try {
+      if (wishlist.includes(product.id)) {
+        const response = await axios.delete(`http://localhost:5000/api/wishlist/${user.id}/${product.id}`);
+        console.log('Product removed from wishlist:', response.data);
+        setWishlist(wishlist.filter(item => item !== product.id));
+      } else {
+        const response = await axios.post('http://localhost:5000/api/wishlist/add', {
+          userId: user.id,
+          productId: product.id,
+        });
+        console.log('Product added to wishlist:', response.data);
+        setWishlist([...wishlist, product.id]);
+      }
+    } catch (error) {
+      console.error('Error toggling wishlist:', error);
+    }
+  };
+
+  const toggleCart = () => {
+    setCartOpen(!cartOpen);
   };
 
   const isXs = useMediaQuery(theme.breakpoints.down('xs'));
@@ -97,14 +181,19 @@ function Products() {
     return size;
   };
 
+  const isWishlist = (productId) => {
+    return wishlist.includes(productId);
+  };
+
   return (
     <ThemeProvider theme={theme}>
+      <Navbar />
       <div style={{ padding: 10 }}>
         <Box
           sx={{
             p: 2,
             display: "flex",
-            justifyContent: "center",
+            justifyContent: "space-between",
             alignItems: "center",
           }}
         >
@@ -115,6 +204,11 @@ function Products() {
               textTransform: "uppercase",
             }}
           />
+          <IconButton onClick={toggleCart}>
+            <Badge badgeContent={Object.keys(cart).length} color="secondary">
+              <ShoppingCartIcon />
+            </Badge>
+          </IconButton>
         </Box>
         <Grid
           container
@@ -179,11 +273,31 @@ function Products() {
                     >
                       {expanded === item.id ? "Show Less" : "Show More"}
                     </Button>
+                    <IconButton
+                      color={isWishlist(item.id) ? "secondary" : "default"}
+                      size="small"
+                      onClick={() => handleToggleWishlist(item)}
+                    >
+                      {isWishlist(item.id) ? <FavoriteIcon sx={{ color: 'red' }} /> : <FavoriteBorderIcon />}
+                    </IconButton>
+                    <IconButton
+                      color="primary"
+                      size="small"
+                      onClick={() => handleAddToCart(item)}
+                    >
+                      <AddShoppingCartIcon />
+                    </IconButton>
                   </StyledCardActions>
                 </StyledCard>
               </Grid>
             ))}
         </Grid>
+        <Cart 
+          cart={cart} 
+          open={cartOpen} 
+          onClose={toggleCart} 
+          setCart={setCart}
+        />
       </div>
     </ThemeProvider>
   );

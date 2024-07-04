@@ -22,15 +22,24 @@ const PopupForm = styled.div`
   padding: 30px;
   border-radius: 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-width: 400px;
+  max-width: 350px;
   width: 100%;
   position: relative;
   background: linear-gradient(
-  to right, 
-  rgba(255, 255, 255, 0.8),
-  rgba(255, 255, 255, 0.8)
-);
+    to right, 
+    rgba(255, 255, 255, 0.8),
+    rgba(255, 255, 255, 0.8)
+  );
+  @media (max-width: 768px) {
+    max-width: 300px;
+    padding: 20px;
+  }
+  @media (max-width: 480px) {
+    max-width: 250px;
+    padding: 15px;
+  }
 `;
+
 
 const CloseButton = styled(CloseIcon)`
   position: absolute;
@@ -116,6 +125,13 @@ const AuthPopup = ({ onClose }) => {
     gender: ''
   });
 
+  const getMinDOB = () => {
+    const today = new Date();
+    const minDOB = new Date(today.getFullYear() - 15, today.getMonth(), today.getDate());
+    return minDOB.toISOString().split('T')[0]; 
+  };
+  
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -126,23 +142,45 @@ const AuthPopup = ({ onClose }) => {
       let response;
       if (isSignUp) {
         response = await axios.post('http://localhost:5000/api/users/signup', formData);
-        console.log(response.data);
+        console.log('Sign up response:', response.data);
         alert('User created successfully!');
       } else {
         response = await axios.post('http://localhost:5000/api/users/signin', {
           email: formData.email,
           password: formData.password
         });
-        const { id, name, email, gender } = response.data; // Adjust based on your backend response
-        console.log(response.data);
-        alert('Signed in successfully!');
-
-        // Store user info in local storage
-        localStorage.setItem('user', JSON.stringify({ id, name, email, gender }));
+        console.log('Sign in response:', response.data);
+        
+        if (response.data && response.data.user) {
+          const { id, name, email, gender, phone_number, date_of_birth } = response.data.user;
+          
+          const userData = { 
+            id, 
+            name, 
+            email, 
+            gender, 
+            phone_number, 
+            date_of_birth 
+          };
+          
+          console.log('User data to be stored:', userData);
+          
+          localStorage.setItem('user', JSON.stringify(userData));
+          
+          console.log('Data stored in localStorage:', localStorage.getItem('user'));
+          
+          alert('Signed in successfully!');
+        } else {
+          console.error('Unexpected response structure:', response.data);
+          alert('Unexpected response from server');
+        }
       }
       onClose();
     } catch (error) {
-      console.error(error);
+      console.error('Error during authentication:', error);
+      if (error.response) {
+        console.error('Error response:', error.response.data);
+      }
       alert(isSignUp ? 'Error creating user' : 'Error signing in');
     }
   };
@@ -161,7 +199,7 @@ const AuthPopup = ({ onClose }) => {
 
   return (
     <Overlay>
-      <PopupForm>
+      <PopupForm >
         <CloseButton onClick={onClose} />
         <Logo src={LogoImg} alt="Auth Logo" />
         <Title>{isSignUp ? 'Create Your Account' : 'Sign In'}</Title>
@@ -200,17 +238,22 @@ const AuthPopup = ({ onClose }) => {
                 placeholder="Phone Number"
                 value={formData.phone_number}
                 onChange={handleChange}
+                required
               />
               <Input
-                type="date"
-                name="date_of_birth"
-                value={formData.date_of_birth}
-                onChange={handleChange}
-              />
+        type="date"
+        name="date_of_birth"
+        value={formData.date_of_birth}
+        onChange={handleChange}
+        required
+        min={getMinDOB()}
+      />
+              
               <Select
                 name="gender"
                 value={formData.gender}
                 onChange={handleChange}
+                required
               >
                 <option value="">Select Gender</option>
                 <option value="male">Male</option>
