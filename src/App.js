@@ -20,7 +20,7 @@ function App() {
     <BrowserRouter>
       <AppContent />
     </BrowserRouter>
-  );
+  );. 
 }
 
 function AppContent() {
