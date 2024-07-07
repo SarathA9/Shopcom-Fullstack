@@ -14,7 +14,7 @@ import SellerPortal from "./components/SellerPortal";
 import Checkout from './components/Checkout';
 import Navbar from './components/Navbar';
 
-
+ 
 function App() {
   return (
     <BrowserRouter>
